@@ -1,8 +1,10 @@
 package fi.dy.masa.minihud.util;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -95,6 +97,26 @@ public class MiscUtils
             }
 
             lines.add(Math.min(1, lines.size()), new TranslatableText("minihud.label.bee_info.count", String.valueOf(count)));
+        }
+    }
+
+    @Nullable
+    public static void addStewTooltip(ItemStack stack, List<Text> lines)
+    {
+        CompoundTag tag = stack.getTag();
+
+        if (tag != null && tag.contains("Effects", Constants.NBT.TAG_LIST))
+        {
+            ListTag effects = tag.getList("Effects", Constants.NBT.TAG_COMPOUND);
+
+            for (int i = 0; i < effects.size(); i++)
+            {
+                tag = effects.getCompound(i);
+                lines.add(Math.min(1, lines.size()), new TranslatableText("minihud.label.stew_info.effect",
+                    StatusEffect.byRawId(tag.getInt("EffectId")).getName(),
+                    new DecimalFormat("#.##").format((float)tag.getInt("EffectDuration") / 20f))
+                );
+            }
         }
     }
 }
